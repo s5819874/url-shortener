@@ -28,6 +28,7 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
 
   let original = req.body.original
+  console.log(original)
 
   //檢查url格式
   const bool = (!validUrl.isUri(original))
