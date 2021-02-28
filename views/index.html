@@ -1,0 +1,13 @@
+<form class="form-inline">
+  <div class="mx-sm-3 mb-2">
+    <label for="original" class="sr-only"></label>
+    <input class="form-control" id="original" placeholder="Put your link here!" style="width: 450px;">
+  </div>
+  <button type="submit" class="btn btn-warning font-weight-bold">Cut It!</button>
+</form>
+
+{{#if bool}}
+<div class="alert alert-danger mt-2" role="alert">
+  This Url Is Invalid!
+</div>
+{{/if}}
