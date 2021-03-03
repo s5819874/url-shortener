@@ -36,39 +36,38 @@ app.post('/', (req, res) => {
     res.render('index', { original, bool })
   }
 
-  //檢查url是否已存在資料庫
+  //檢查原網址是否已存在資料庫
   Url.findOne({ original })
-    .then(url => {
+    .then(async url => {
       if (url) {
+        //原網址已存在，顯示期短網址
         const shorted = url.shorted
         const url = baseUrl + shorted
         res.render('result', { url })
       } else {
-        //url不存在，創建新資料
 
-        //檢查短網址是否重複
-
-        while (true) {
+        let check = true
+        while (check) {
+          //至少執行一次
+          //原網址不存在，產生短網址
           let shorted = randomURL(6)
-          Url.findOne({ shorted })
-            .then(url => {
-              if (!url) {
-                return;
-              }
-            })
-            .catch(error => console.log(error))
+          //檢查短網址是否重複
+          await findShorted(shorted)
         }
 
+        //直到短網址無重複後，創建新資料
         Url.create({ original, shorted })
-        return shorted
+          .then(() => {
+            Url.findOne({ original, shorted })
+              .then(result => {
+                const url = baseUrl + result.shorted
+                res.render('result', { url })
+              })
+          })
+
       }
+
     })
-    .catch(error => console.log(error))
-    .then(shorted => {
-      const url = baseUrl + shorted
-      res.render('result', { url })
-    })
-    .catch(error => console.log(error))
 })
 
 
@@ -85,3 +84,12 @@ app.get('/:shorted', (req, res) => {
 app.listen(PORT, () => {
   console.log(`App is now running on http://localhost:${PORT}`)
 })
+
+// 找短網址
+function findShorted(shorted) {
+  Url.findOne({ shorted })
+    .then(url => {
+      console.log(url) //先確定找不到的話 url = null
+      check = url
+    })
+}
